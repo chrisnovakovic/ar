@@ -137,9 +137,7 @@ func (rd *Reader) readHeader() (*Header, error) {
 			if idx := bytes.IndexByte(data, '\n'); idx != -1 {
 				data = data[:idx]
 			}
-			if idx := bytes.IndexByte(data, '/'); idx != -1 {
-				data = data[:idx]
-			}
+			data = bytes.TrimRight(data, "/")
 			header.Name = string(data)
 		}
 	}
@@ -157,6 +155,7 @@ func (rd *Reader) Next() (*Header, error) {
 	}
 
 	hdr, err := rd.readHeader()
+
 	if err != nil {
 		return nil, err
 	} else if strings.HasPrefix(hdr.Name, "#1/") {
@@ -171,6 +170,17 @@ func (rd *Reader) Next() (*Header, error) {
 	}
 	rd.longFilenames = buf.Bytes()
 	return rd.Next()
+}
+
+// handleGNU handles GNU-style long file names, which are stored on the front of the data section.
+func (rd *Reader) handleGNU(hdr *Header) error {
+	b := make([]byte, hdr.Size)
+	if _, err := rd.Read(b); err != nil {
+		return err
+	}
+	// Names are right-padded with slashes
+	hdr.Name = string(bytes.TrimRight(b, "/"))
+	return nil
 }
 
 // handleBSD handles BSD-style long file names, which are stored on the front of the data section.

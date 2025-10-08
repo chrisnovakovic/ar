@@ -174,7 +174,7 @@ func (rd *Reader) Next() (*Header, error) {
 			}
 			fmt.Printf("string table is %d bytes\n", rd.nb)
 			buf := make([]byte, rd.nb)
-			_, err := rd.Read(buf)
+			_, err := io.ReadFull(buf, rd.nb)
 			if err != nil {
 				return nil, &ErrStringTable{Err: err}
 			}

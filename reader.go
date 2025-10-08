@@ -172,12 +172,14 @@ func (rd *Reader) Next() (*Header, error) {
 			if rd.stringTable != nil {
 				return nil, &ErrStringTable{Err: errors.New("archive contains multiple string tables")}
 			}
+			fmt.Printf("string table is %d bytes\n", rd.nb)
 			buf := make([]byte, rd.nb)
 			_, err := rd.Read(buf)
 			if err != nil {
 				return nil, &ErrStringTable{Err: err}
 			}
 			rd.stringTable = buf
+			fmt.Printf("string table=|%s|\n", rd.stringTable)
 			// The string table should be invisible to the caller - return the header for the first real file
 			// in the archive.
 			return rd.Next()

@@ -231,8 +231,11 @@ func (rd *Reader) parseGNUFileName(header *Header) error {
 				Err:  errors.New("invalid string table offset"),
 			}
 		}
+		fmt.Printf("start=%d\n", start)
 		tableEntry := rd.stringTable[start:]
+		fmt.Printf("tableEntry=%s\n", tableEntry)
 		end := bytes.IndexByte(tableEntry, '\n')
+		fmt.Printf("end=%d\n", end)
 		if end == -1 {
 			return &ErrStringTable{Err: errors.New("missing trailing newline")}
 		}
